@@ -13,7 +13,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware para logar requisições
 app.use((req, res, next) => {
   console.log(
     `[${new Date().toISOString()}] Incoming Request: ${req.method} ${
@@ -26,10 +25,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware para parsear JSON
 app.use(express.json());
 
-// Middleware para logar o corpo após o parsing
 app.use((req, res, next) => {
   console.log("Body after parsing:", JSON.stringify(req.body, null, 2));
   next();

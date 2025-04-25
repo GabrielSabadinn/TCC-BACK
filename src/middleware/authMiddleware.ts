@@ -76,7 +76,6 @@ export const authMiddleware = (
   }
 };
 
-// Estender o tipo Request do Express para incluir a propriedade user
 declare global {
   namespace Express {
     interface Request {
