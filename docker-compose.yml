@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_api
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - node_api_network
+    depends_on:
+      sql_server:
+        condition: service_healthy
+
+  sql_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlserver
+    container_name: sql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Developer
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - node_api_network
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  sqlserver-data:
+
+
+networks:
+  node_api_network:
+    driver: bridge
