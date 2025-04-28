@@ -11,12 +11,11 @@ import { getDbConnection } from "./config/database";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.API_PORT || 3000;
 
 app.use((req, res, next) => {
   console.log(
-    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${
-      req.originalUrl
+    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${req.originalUrl
     }`
   );
   console.log("Headers:", JSON.stringify(req.headers, null, 2));

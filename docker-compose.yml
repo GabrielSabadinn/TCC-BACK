@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_api
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - node_api_network
+    depends_on:
+      sql_server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  sql_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlserver
+    container_name: sql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Developer
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - node_api_sqlserver_data:/var/opt/mssql
+    networks:
+      - node_api_network
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:7
+    container_name: redis_server
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - node_api_network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  node_api_sqlserver_data:
+
+
+networks:
+  node_api_network:
+    driver: bridge
