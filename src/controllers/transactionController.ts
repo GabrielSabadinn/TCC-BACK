@@ -44,10 +44,21 @@ export class TransactionController {
 
   static async createTransaction(req: Request, res: Response) {
     await Promise.all([
-      body("categoryId").isInt().run(req),
-      body("date").isDate().run(req),
-      body("description").optional().isString().run(req),
-      body("amount").isFloat().run(req),
+      body("categoryId")
+        .isInt()
+        .withMessage("Category ID must be an integer")
+        .run(req),
+      body("date").isDate().withMessage("Date must be a valid date").run(req),
+      body("description")
+        .optional()
+        .isString()
+        .withMessage("Description must be a string")
+        .run(req),
+      body("amount").isFloat().withMessage("Amount must be a number").run(req),
+      body("type")
+        .isIn(["income", "expense"])
+        .withMessage("Type must be 'income' or 'expense'")
+        .run(req),
     ]);
 
     const errors = validationResult(req);
@@ -73,11 +84,32 @@ export class TransactionController {
 
   static async updateTransaction(req: Request, res: Response) {
     await Promise.all([
-      param("id").isInt().run(req),
-      body("categoryId").optional().isInt().run(req),
-      body("date").optional().isDate().run(req),
-      body("description").optional().isString().run(req),
-      body("amount").optional().isFloat().run(req),
+      param("id").isInt().withMessage("ID must be an integer").run(req),
+      body("categoryId")
+        .optional()
+        .isInt()
+        .withMessage("Category ID must be an integer")
+        .run(req),
+      body("date")
+        .optional()
+        .isDate()
+        .withMessage("Date must be a valid date")
+        .run(req),
+      body("description")
+        .optional()
+        .isString()
+        .withMessage("Description must be a string")
+        .run(req),
+      body("amount")
+        .optional()
+        .isFloat()
+        .withMessage("Amount must be a number")
+        .run(req),
+      body("type")
+        .optional()
+        .isIn(["income", "expense"])
+        .withMessage("Type must be 'income' or 'expense'")
+        .run(req),
     ]);
 
     const errors = validationResult(req);
@@ -106,7 +138,7 @@ export class TransactionController {
   }
 
   static async deleteTransaction(req: Request, res: Response) {
-    await param("id").isInt().run(req);
+    await param("id").isInt().withMessage("ID must be an integer").run(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
