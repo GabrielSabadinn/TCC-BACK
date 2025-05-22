@@ -19,27 +19,27 @@ services:
       redis:
         condition: service_healthy
 
-  # sql_server:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.sqlserver
-  #   container_name: sql_server
-  #   environment:
-  #     - ACCEPT_EULA=Y
-  #     - SA_PASSWORD=${SA_PASSWORD}
-  #     - MSSQL_PID=Developer
-  #   ports:
-  #     - "${DB_PORT}:${DB_PORT}"
-  #   volumes:
-  #     - node_api_sqlserver_data:/var/opt/mssql
-  #   networks:
-  #     - node_api_network
-  #   healthcheck:
-  #     test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}", "-Q", "SELECT 1" ]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 30s
+  sqlserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlserver
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Developer
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - node_api_sqlserver_data:/var/opt/mssql
+    networks:
+      - node_api_network
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SA_PASSWORD}", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis:7
@@ -50,7 +50,7 @@ services:
     networks:
       - node_api_network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,6 +58,7 @@ services:
 
 volumes:
   node_api_sqlserver_data:
+
 
 networks:
   node_api_network:
