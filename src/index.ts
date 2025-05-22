@@ -7,6 +7,7 @@ import transactionRoutes from "./routes/transactionRoutes";
 import transactionCategoryRoutes from "./routes/transactionCategoryRoutes";
 import investmentRoutes from "./routes/investmentRoutes";
 import fixedAccountRoutes from "./routes/fixedAccountRoutes";
+import bankStatementRoutes from "./routes/bankStatementRoutes";
 import { getDbConnection } from "./config/database";
 
 dotenv.config();
@@ -18,8 +19,7 @@ app.use(cors());
 
 app.use((req, res, next) => {
   console.log(
-    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${
-      req.originalUrl
+    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${req.originalUrl
     }`
   );
   console.log("Headers:", JSON.stringify(req.headers, null, 2));
@@ -41,6 +41,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/transaction-categories", transactionCategoryRoutes);
 app.use("/api/investments", investmentRoutes);
 app.use("/api/fixed-accounts", fixedAccountRoutes);
+app.use("/api/bank-statements", bankStatementRoutes);
 
 app.get("/test", (req, res) => {
   res.status(200).json({ message: "Server is running" });

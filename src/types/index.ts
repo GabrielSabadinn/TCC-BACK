@@ -48,3 +48,14 @@ export interface TokenPayload {
   userId: number;
   email: string;
 }
+
+export interface BankStatement {
+  Id: number;
+  UserId: number;
+  EntryType?: string;
+  EntryId: number;
+  Value: number;
+  Description?: string;
+  Date: Date;
+  Created_At?: Date;
+}

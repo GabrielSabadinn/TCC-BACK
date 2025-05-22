@@ -8,8 +8,7 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   console.log(
-    `[${new Date().toISOString()}] authMiddleware: Processing ${req.method} ${
-      req.originalUrl
+    `[${new Date().toISOString()}] authMiddleware: Processing ${req.method} ${req.originalUrl
     }`
   );
   console.log("authMiddleware: Headers:", JSON.stringify(req.headers, null, 2));
