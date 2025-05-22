@@ -49,4 +49,36 @@ export class BankStatementService {
             balance: parseFloat(row.Balance || 0)
         };
     }
+
+    static async listByEntryAndUser(entryId: number, userId: number) {
+        const pool = await sql.connect();
+
+        const result = await pool.request()
+            .input("entryId", sql.Int, entryId)
+            .input("userId", sql.Int, userId)
+            .query(`
+            SELECT *
+            FROM BankStatement
+            WHERE EntryId = @entryId AND UserId = @userId
+            ORDER BY Date DESC
+          `);
+
+        return result.recordset;
+    }
+
+    static async listByUser(entryId: number, userId: number) {
+        const pool = await sql.connect();
+
+        const result = await pool.request()
+            .input("entryId", sql.Int, entryId)
+            .input("userId", sql.Int, userId)
+            .query(`
+            SELECT *
+            FROM BankStatement
+            WHERE UserId = @userId
+            ORDER BY Date DESC
+          `);
+
+        return result.recordset;
+    }
 }

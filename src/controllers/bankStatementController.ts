@@ -57,7 +57,27 @@ export class BankStatementController {
             const balance = await BankStatementService.getBalanceByUser(userId);
             return res.status(200).json(balance);
         } catch (error) {
-            console.error("Get balance error:", error);
+            return res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
+    static async list(req: Request, res: Response) {
+        try {
+            const entryId = Number(req.query.entryId);
+            const userId = req.user?.userId;
+
+            if (!userId) {
+                return res.status(401).json({ message: "Usuário não autenticado" });
+            }
+
+            if (entryId) {
+                const statements = await BankStatementService.listByEntryAndUser(entryId, userId);
+                return res.status(200).json(statements);
+            } else {
+                const statements = await BankStatementService.listByUser(entryId, userId);
+                return res.status(200).json(statements);
+            }
+        } catch (error) {
             return res.status(500).json({ message: (error as Error).message });
         }
     }
