@@ -81,4 +81,20 @@ export class BankStatementService {
 
         return result.recordset;
     }
+
+
+    static async deleteStatement(userId: number, entryId: number, date: Date) {
+        const pool = await sql.connect();
+
+        const result = await pool.request()
+            .input("userId", sql.Int, userId)
+            .input("entryId", sql.Int, entryId)
+            .input("date", sql.DateTime, date)
+            .query(`
+                DELETE TOP (1) FROM [dbo].[BankStatement]
+                WHERE [UserId] = @userId AND [EntryId] = @entryId AND [Date] = @date
+            `);
+
+        return result.rowsAffected[0] > 0;
+    }
 }
