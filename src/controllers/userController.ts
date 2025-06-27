@@ -87,6 +87,32 @@ export class UserController {
     }
   }
 
+  static async updateUserMeta(req: Request, res: Response) {
+    await param("id").isInt().run(req);
+    await body("meta").optional({ nullable: true }).isDecimal({ decimal_digits: '0,4' }).run(req);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const id = parseInt(req.params.id, 10);
+
+      const metaInput = req.body.meta;
+      const meta = metaInput !== undefined ? parseFloat(metaInput) : null;
+
+      const updated = await UserService.updateUserMeta(id, meta);
+      if (!updated) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      return res.status(200).json({ message: "Meta atualizada" });
+    } catch (error) {
+      return res.status(500).json({ message: (error as Error).message });
+    }
+  }
+
   static async deleteUser(req: Request, res: Response) {
     await param("id").isInt().run(req);
     const errors = validationResult(req);
