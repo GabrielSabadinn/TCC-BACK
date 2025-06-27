@@ -12,6 +12,26 @@ export class UserService {
     return result.recordset;
   }
 
+  static async updateUserMeta(id: number, meta: number | null): Promise<boolean> {
+    const pool = await getDbConnection();
+    const request = pool.request();
+
+    request.input("id", sql.Int, id);
+
+    if (meta === null || meta === undefined) {
+      request.input("meta", sql.Decimal(18, 4), null); // ou: sql.Variant, se preferir
+    } else {
+      request.input("meta", sql.Decimal(18, 4), meta);
+    }
+
+    const result = await request.query(
+      "UPDATE [F66IN].[dbo].[Users] SET meta = @meta WHERE Id = @id"
+    );
+
+    return result.rowsAffected[0] > 0;
+  }
+
+
   static async getUserById(id: number): Promise<User | null> {
     const pool = await getDbConnection();
     const result = await pool
