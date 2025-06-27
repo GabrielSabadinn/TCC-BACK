@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body, validationResult, query } from "express-validator";
 import { BankStatementService } from "../services/bankStatementService";
 
 export class BankStatementController {
@@ -76,6 +76,42 @@ export class BankStatementController {
             } else {
                 const statements = await BankStatementService.listByUser(entryId, userId);
                 return res.status(200).json(statements);
+            }
+        } catch (error) {
+            return res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
+
+    static async delete(req: Request, res: Response) {
+        await Promise.all([
+            query("entryId").isInt().withMessage("entryId must be an integer").run(req),
+            query("date")
+                .isISO8601()
+                .withMessage("Date must be a valid ISO date")
+                .run(req),
+        ]);
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const entryId = parseInt(req.query.entryId as string, 10);
+            const date = new Date(req.query.date as string);
+
+            const deleted = await BankStatementService.deleteStatement(userId, entryId, date);
+
+            if (deleted) {
+                return res.status(200).json({ message: "Registro deletado com sucesso" });
+            } else {
+                return res.status(404).json({ message: "Registro não encontrado" });
             }
         } catch (error) {
             return res.status(500).json({ message: (error as Error).message });
