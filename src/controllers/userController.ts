@@ -77,6 +77,20 @@ export class UserController {
       if (!data.name) {
         return res.status(400).json({ message: "Name is required" });
       }
+      // Validate Base64 strings if provided
+      if (data.pathImageIcon && !data.pathImageIcon.startsWith("data:image/")) {
+        return res
+          .status(400)
+          .json({ message: "Invalid Base64 format for pathImageIcon" });
+      }
+      if (
+        data.pathImageBanner &&
+        !data.pathImageBanner.startsWith("data:image/")
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Invalid Base64 format for pathImageBanner" });
+      }
       const user = await UserService.updateUser(id, data);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -89,7 +103,10 @@ export class UserController {
 
   static async updateUserMeta(req: Request, res: Response) {
     await param("id").isInt().run(req);
-    await body("meta").optional({ nullable: true }).isDecimal({ decimal_digits: '0,4' }).run(req);
+    await body("meta")
+      .optional({ nullable: true })
+      .isDecimal({ decimal_digits: "0,4" })
+      .run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

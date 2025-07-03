@@ -12,14 +12,17 @@ export class UserService {
     return result.recordset;
   }
 
-  static async updateUserMeta(id: number, meta: number | null): Promise<boolean> {
+  static async updateUserMeta(
+    id: number,
+    meta: number | null
+  ): Promise<boolean> {
     const pool = await getDbConnection();
     const request = pool.request();
 
     request.input("id", sql.Int, id);
 
     if (meta === null || meta === undefined) {
-      request.input("meta", sql.Decimal(18, 4), null); // ou: sql.Variant, se preferir
+      request.input("meta", sql.Decimal(18, 4), null);
     } else {
       request.input("meta", sql.Decimal(18, 4), meta);
     }
@@ -30,7 +33,6 @@ export class UserService {
 
     return result.rowsAffected[0] > 0;
   }
-
 
   static async getUserById(id: number): Promise<User | null> {
     const pool = await getDbConnection();
@@ -52,8 +54,8 @@ export class UserService {
       .input("id", sql.Int, id)
       .input("name", sql.NVarChar, name)
       .input("email", sql.NVarChar, email)
-      .input("pathImageBanner", sql.NVarChar, pathImageBanner)
-      .input("pathImageIcon", sql.NVarChar, pathImageIcon).query(`
+      .input("pathImageBanner", sql.NVarChar(sql.MAX), pathImageBanner)
+      .input("pathImageIcon", sql.NVarChar(sql.MAX), pathImageIcon).query(`
         UPDATE [F66IN].[dbo].[Users]
         SET Name = @name, Email = @email, PathImageBanner = @pathImageBanner,
             PathImageIcon = @pathImageIcon, UpdatedAt = GETDATE()

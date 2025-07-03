@@ -14,12 +14,14 @@ dotenv.config();
 
 const app = express();
 const port = process.env.API_PORT || 3000;
+app.use(express.json({ limit: "100mb" }));
 
 app.use(cors());
 
 app.use((req, res, next) => {
   console.log(
-    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${req.originalUrl
+    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${
+      req.originalUrl
     }`
   );
   console.log("Headers:", JSON.stringify(req.headers, null, 2));
