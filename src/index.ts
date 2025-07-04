@@ -8,6 +8,7 @@ import transactionCategoryRoutes from "./routes/transactionCategoryRoutes";
 import investmentRoutes from "./routes/investmentRoutes";
 import fixedAccountRoutes from "./routes/fixedAccountRoutes";
 import bankStatementRoutes from "./routes/bankStatementRoutes";
+import noteRoutes from "./routes/noteRoutes";
 import { getDbConnection } from "./config/database";
 
 dotenv.config();
@@ -20,8 +21,7 @@ app.use(cors());
 
 app.use((req, res, next) => {
   console.log(
-    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${
-      req.originalUrl
+    `[${new Date().toISOString()}] Incoming Request: ${req.method} ${req.originalUrl
     }`
   );
   console.log("Headers:", JSON.stringify(req.headers, null, 2));
@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/notes", noteRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/transaction-categories", transactionCategoryRoutes);
